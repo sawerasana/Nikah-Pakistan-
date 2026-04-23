@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Browse Proposals | Nikah Pakistan</title>
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="../css/style.css">
+  
+  <!-- Firebase Configuration -->
+  <script type="module" src="../js/firebase-config.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header with User Info -->
+    <header class="site-header">
+      <div class="container header-inner">
+        <div class="logo-area">
+          <span class="logo-icon">🕌</span>
+          <h1 class="site-title">Nikah Pakistan</h1>
+          <span class="logo-urdu">نکاح پاکستان</span>
+        </div>
+        <div class="user-nav">
+          <a href="profile.html" class="nav-link">Edit Profile</a>
+          <span class="separator">|</span>
+          <a href="#" id="logout-btn" class="nav-link">Logout</a>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+      <section class="browse-section">
+        <div class="container">
+          <!-- Welcome Message -->
+          <div id="welcome-message" class="welcome-banner">
+            <p>Loading your profile...</p>
+          </div>
+          
+          <!-- Filter Bar -->
+          <div class="filter-bar">
+            <h3 class="filter-title">
+              <span>Filter Proposals</span>
+              <span class="urdu-label">رشتے فلٹر کریں</span>
+            </h3>
+            <div class="filter-controls">
+              <div class="filter-group">
+                <label for="filter-age-min">Min Age</label>
+                <input type="number" id="filter-age-min" min="18" max="100" placeholder="18">
+              </div>
+              <div class="filter-group">
+                <label for="filter-age-max">Max Age</label>
+                <input type="number" id="filter-age-max" min="18" max="100" placeholder="100">
+              </div>
+              <div class="filter-group">
+                <label for="filter-city">City</label>
+                <input type="text" id="filter-city" placeholder="Any city">
+              </div>
+              <div class="filter-actions">
+                <button id="apply-filters-btn" class="btn btn-primary btn-small">Apply</button>
+                <button id="clear-filters-btn" class="btn btn-secondary btn-small">Clear</button>
+              </div>
+            </div>
+            <p class="filter-hint">Default: Opposite gender, age ±5 years from your age.</p>
+          </div>
+          
+          <!-- Cards Grid -->
+          <div id="cards-container" class="cards-grid">
+            <!-- Cards will be rendered here via JavaScript -->
+            <div class="loading-placeholder">Loading proposals...</div>
+          </div>
+          
+          <!-- No Results Message -->
+          <div id="no-results" class="no-results" style="display: none;">
+            <p>No proposals match your filters. Try adjusting your criteria.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div class="footer-brand">
+          <span class="footer-logo">Nikah Pakistan</span>
+          <span class="footer-tagline">نکاح پاکستان</span>
+        </div>
+        <div class="footer-links">
+          <a href="#">About</a>
+          <span class="separator">|</span>
+          <a href="#">Contact</a>
+          <span class="separator">|</span>
+          <a href="#">Privacy</a>
+        </div>
+        <div class="footer-copyright">
+          <p>© 2026 Nikah Pakistan. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Browse Page Logic -->
+  <script type="module">
+    /**
+     * BROWSE PAGE LOGIC
+     * - Fetches current user's data.
+     * - Queries Firestore for active users (opposite gender by default).
+     * - Renders proposal cards with filters.
+     * - Handles WhatsApp interest button.
+     */
+    
+    // Helper: Wait for Firebase
+    const waitForFirebase = () => {
+      return new Promise((resolve, reject) => {
+        if (window.auth && window.db) {
+          resolve({ auth: window.auth, db: window.db });
+          return;
+        }
+        const interval = setInterval(() => {
+          if (window.auth && window.db) {
+            clearInterval(interval);
+            resolve({ auth: window.auth, db: window.db });
+          }
+        }, 100);
+        setTimeout(() => {
+          clearInterval(interval);
+          reject(new Error('Firebase not initialized.'));
+        }, 5000);
+      });
+    };
+    
+    // Import Firebase functions
+    import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { collection, query, where, getDocs, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    
+    // Configuration
+    const ADMIN_WHATSAPP = "923001234567"; // TODO: Replace with actual admin number (country code, no +)
+    
+    // DOM Elements
+    const welcomeMsg = document.getElementById('welcome-message');
+    const cardsContainer = document.getElementById('cards-container');
+    const noResultsDiv = document.getElementById('no-results');
+    const logoutBtn = document.getElementById('logout-btn');
+    const applyFiltersBtn = document.getElementById('apply-filters-btn');
+    const clearFiltersBtn = document.getElementById('clear-filters-btn');
+    const filterAgeMin = document.getElementById('filter-age-min');
+    const filterAgeMax = document.getElementById('filter-age-max');
+    const filterCity = document.getElementById('filter-city');
+    
+    // State
+    let currentUser = null;
+    let currentUserData = null;
+    let allUsersCache = [];      // Cached raw user documents
+    let filteredCards = [];
+    let defaultAgeRange = { min: 18, max: 100 };
+    
+    // Helper: Show welcome message
+    function updateWelcome(userData) {
+      if (userData) {
+        welcomeMsg.innerHTML = `
+          <p><strong>Assalam-o-Alaikum, ${userData.name || 'Guest'}!</strong> 
+          <span class="urdu-text">خوش آمدید</span></p>
+          <p>Browse proposals based on your preferences.</p>
+        `;
+      }
+    }
+    
+    // Helper: Generate WhatsApp link
+    function generateWhatsAppLink(card) {
+      if (!currentUserData) return '#';
+      
+      const message = `Assalam-o-Alaikum,%0A%0A` +
+                      `I am interested in Proposal ID: ${card.cardId}.%0A` +
+                      `Please share my details with the respective person.%0A%0A` +
+                      `My Name: ${currentUserData.name}%0A` +
+                      `My Age: ${currentUserData.age}%0A` +
+                      `My City: ${currentUserData.city || 'Not specified'}%0A%0A` +
+                      `JazakAllah Khair.`;
+      
+      return `https://wa.me/${ADMIN_WHATSAPP}?text=${message}`;
+    }
+    
+    // Helper: Render a single card
+    function createCardElement(card) {
+      const cardDiv = document.createElement('div');
+      cardDiv.className = 'proposal-card';
+      cardDiv.dataset.cardId = card.cardId;
+      
+      const photoURL = card.photoURL || null;
+      const photoHtml = photoURL 
+        ? `<img src="${photoURL}" alt="${card.name}" class="card-photo">`
+        : `<div class="card-photo-placeholder">🕌</div>`;
+      
+      cardDiv.innerHTML = `
+        <div class="card-photo-wrapper">
+          ${photoHtml}
+        </div>
+        <div class="card-content">
+          <h4 class="card-name">${card.name || 'Anonymous'}</h4>
+          <p class="card-detail"><span class="label">Age:</span> ${card.age || '—'}</p>
+          <p class="card-detail"><span class="label">City:</span> ${card.city || '—'}</p>
+          <p class="card-detail"><span class="label">Education:</span> ${card.education || '—'}</p>
+          <p class="card-detail"><span class="label">Profession:</span> ${card.profession || '—'}</p>
+          <button class="btn btn-primary btn-small interested-btn" data-card-id="${card.cardId}">
+            <span>Interested</span>
+            <span class="urdu-label">دلچسپی ہے</span>
+          </button>
+        </div>
+      `;
+      
+      // Attach event to interested button
+      const btn = cardDiv.querySelector('.interested-btn');
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const waLink = generateWhatsAppLink(card);
+        window.open(waLink, '_blank');
+      });
+      
+      return cardDiv;
+    }
+    
+    // Helper: Render all cards
+    function renderCards(cards) {
+      cardsContainer.innerHTML = '';
+      if (!cards || cards.length === 0) {
+        noResultsDiv.style.display = 'block';
+        return;
+      }
+      noResultsDiv.style.display = 'none';
+      cards.forEach(card => {
+        cardsContainer.appendChild(createCardElement(card));
+      });
+    }
+    
+    // Helper: Apply filters to cached data
+    function applyFiltersAndRender() {
+      if (!currentUserData) return;
+      
+      let filtered = [...allUsersCache];
+      
+      // Exclude current user
+      filtered = filtered.filter(u => u.uid !== currentUser.uid);
+      
+      // Gender filter (opposite by default, can be overridden by clear filters)
+      const oppositeGender = currentUserData.gender === 'Male' ? 'Female' : 'Male';
+      filtered = filtered.filter(u => u.gender === oppositeGender);
+      
+      // Age filter
+      const minAge = parseInt(filterAgeMin.value) || defaultAgeRange.min;
+      const maxAge = parseInt(filterAgeMax.value) || defaultAgeRange.max;
+      filtered = filtered.filter(u => u.age >= minAge && u.age <= maxAge);
+      
+      // City filter (case-insensitive contains)
+      const cityFilter = filterCity.value.trim().toLowerCase();
+      if (cityFilter) {
+        filtered = filtered.filter(u => u.city && u.city.toLowerCase().includes(cityFilter));
+      }
+      
+      filteredCards = filtered;
+      renderCards(filteredCards);
+    }
+    
+    // Helper: Reset filters to default
+    function resetFiltersToDefault() {
+      if (!currentUserData) return;
+      const userAge = currentUserData.age || 25;
+      defaultAgeRange = {
+        min: Math.max(18, userAge - 5),
+        max: userAge + 5
+      };
+      filterAgeMin.value = defaultAgeRange.min;
+      filterAgeMax.value = defaultAgeRange.max;
+      filterCity.value = '';
+      applyFiltersAndRender();
+    }
+    
+    // Fetch all active users (Firestore query)
+    async function fetchUsers(db) {
+      try {
+        // Query only active users
+        const usersRef = collection(db, "users");
+        const q = query(
+          usersRef,
+          where("isActive", "==", true),
+          orderBy("createdAt", "desc")
+          // Note: You may need to create a composite index for this query.
+          // Firebase Console will prompt you with a link when you first run this.
+        );
+        
+        const querySnapshot = await getDocs(q);
+        const users = [];
+        querySnapshot.forEach((doc) => {
+          users.push({ uid: doc.id, ...doc.data() });
+        });
+        return users;
+      } catch (error) {
+        console.error('Error fetching users:', error);
+        // If index is missing, Firebase will throw an error with a link.
+        if (error.code === 'failed-precondition') {
+          alert('Please create the required Firestore index. Check the console for the link.');
+        }
+        return [];
+      }
+    }
+    
+    // Load everything when auth is ready
+    async function initializePage(auth, db) {
+      onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+          window.location.href = 'login.html';
+          return;
+        }
+        currentUser = user;
+        
+        // Fetch current user's Firestore document
+        const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+        const userDocRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userDocRef);
+        if (userSnap.exists()) {
+          currentUserData = userSnap.data();
+          updateWelcome(currentUserData);
+        } else {
+          // If no Firestore doc, redirect to profile completion
+          window.location.href = 'profile.html';
+          return;
+        }
+        
+        // Fetch all active users
+        cardsContainer.innerHTML = '<div class="loading-placeholder">Loading proposals...</div>';
+        allUsersCache = await fetchUsers(db);
+        
+        // Set default age range based on user
+        const userAge = currentUserData.age || 25;
+        defaultAgeRange = {
+          min: Math.max(18, userAge - 5),
+          max: userAge + 5
+        };
+        filterAgeMin.value = defaultAgeRange.min;
+        filterAgeMax.value = defaultAgeRange.max;
+        
+        // Apply filters and render
+        applyFiltersAndRender();
+      });
+    }
+    
+    // Logout handler
+    logoutBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      try {
+        const { auth } = await waitForFirebase();
+        await signOut(auth);
+        window.location.href = 'login.html';
+      } catch (err) {
+        console.error('Logout error:', err);
+      }
+    });
+    
+    // Filter button handlers
+    applyFiltersBtn.addEventListener('click', () => {
+      applyFiltersAndRender();
+    });
+    
+    clearFiltersBtn.addEventListener('click', () => {
+      resetFiltersToDefault();
+    });
+    
+    // Initialize page
+    (async () => {
+      try {
+        const { auth, db } = await waitForFirebase();
+        await initializePage(auth, db);
+      } catch (error) {
+        console.error('Initialization error:', error);
+        cardsContainer.innerHTML = '<p class="error">Failed to load. Please refresh.</p>';
+      }
+    })();
+  </script>
+</body>
+</html>
