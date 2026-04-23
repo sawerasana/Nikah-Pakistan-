@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Complete Profile | Nikah Pakistan</title>
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="../css/style.css">
+  
+  <!-- Firebase Configuration -->
+  <script type="module" src="../js/firebase-config.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="site-header">
+      <div class="container header-inner">
+        <div class="logo-area">
+          <span class="logo-icon">🕌</span>
+          <h1 class="site-title">Nikah Pakistan</h1>
+          <span class="logo-urdu">نکاح پاکستان</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+      <section class="profile-section">
+        <div class="container">
+          <div class="profile-card">
+            <h2 class="section-title">
+              <span class="urdu-heading">پروفائل مکمل کریں</span>
+              <span class="en-subtitle">Complete Your Profile</span>
+            </h2>
+            
+            <p class="profile-intro">
+              Complete your profile to help us find the best matches for you. 
+              <span class="urdu-text">بہتر رشتے کے لیے اپنی معلومات مکمل کریں۔</span>
+            </p>
+            
+            <!-- Profile Form -->
+            <form id="profile-form" class="profile-form">
+              <!-- Profile Picture Upload -->
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span>Profile Picture</span>
+                  <span class="urdu-label">تصویر</span>
+                </h3>
+                <div class="photo-upload-area">
+                  <div class="photo-preview" id="photo-preview">
+                    <img id="preview-img" src="#" alt="Profile Preview" style="display: none;">
+                    <span id="photo-placeholder" class="photo-placeholder">🖼️</span>
+                  </div>
+                  <div class="photo-actions">
+                    <label for="profile-photo" class="btn btn-secondary btn-small">
+                      <span>Choose Photo</span>
+                      <span class="urdu-label">تصویر منتخب کریں</span>
+                    </label>
+                    <input type="file" id="profile-photo" accept="image/*" style="display: none;">
+                    <p class="photo-hint">Optional. Your photo will only be shared with your permission.</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Personal Details Section -->
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span>Personal Details</span>
+                  <span class="urdu-label">ذاتی معلومات</span>
+                </h3>
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="city">City <span class="urdu-label">شہر</span></label>
+                    <input type="text" id="city" name="city" class="form-input" placeholder="Lahore">
+                  </div>
+                  <div class="form-group">
+                    <label for="height">Height <span class="urdu-label">قد</span></label>
+                    <input type="text" id="height" name="height" class="form-input" placeholder="5'10&quot;">
+                  </div>
+                </div>
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="maritalStatus">Marital Status <span class="urdu-label">ازدواجی حیثیت</span></label>
+                    <select id="maritalStatus" name="maritalStatus" class="form-input">
+                      <option value="" disabled selected>-- Select --</option>
+                      <option value="Never Married">Never Married</option>
+                      <option value="Divorced">Divorced</option>
+                      <option value="Widowed">Widowed</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="contactNumber">Contact Number <span class="urdu-label">رابطہ نمبر</span></label>
+                    <input type="tel" id="contactNumber" name="contactNumber" class="form-input" placeholder="03XX-XXXXXXX" dir="ltr">
+                    <small class="field-note">Private – only shared when you approve a proposal.</small>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Education & Profession Section -->
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span>Education & Profession</span>
+                  <span class="urdu-label">تعلیم اور پیشہ</span>
+                </h3>
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="education">Education <span class="urdu-label">تعلیم</span></label>
+                    <input type="text" id="education" name="education" class="form-input" placeholder="MBA, BSc, etc.">
+                  </div>
+                  <div class="form-group">
+                    <label for="profession">Profession <span class="urdu-label">پیشہ</span></label>
+                    <input type="text" id="profession" name="profession" class="form-input" placeholder="Banker, Teacher, etc.">
+                  </div>
+                </div>
+                
+                <div class="form-group">
+                  <label for="religiousEducation">Religious Education <span class="urdu-label">دینی تعلیم</span></label>
+                  <input type="text" id="religiousEducation" name="religiousEducation" class="form-input" placeholder="Hafiz, Aalim, General, etc.">
+                </div>
+              </div>
+              
+              <!-- Family & Lifestyle Section -->
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span>Family & Lifestyle</span>
+                  <span class="urdu-label">خاندان اور طرزِ زندگی</span>
+                </h3>
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="motherTongue">Mother Tongue <span class="urdu-label">مادری زبان</span></label>
+                    <input type="text" id="motherTongue" name="motherTongue" class="form-input" placeholder="Urdu, Punjabi, etc.">
+                  </div>
+                  <div class="form-group">
+                    <label for="siblings">Number of Siblings <span class="urdu-label">بہن بھائیوں کی تعداد</span></label>
+                    <input type="number" id="siblings" name="siblings" class="form-input" min="0" placeholder="3">
+                  </div>
+                </div>
+                
+                <div class="form-row">
+                  <div class="form-group">
+                    <label for="houseStatus">House Status <span class="urdu-label">گھر</span></label>
+                    <select id="houseStatus" name="houseStatus" class="form-input">
+                      <option value="" disabled selected>-- Select --</option>
+                      <option value="Own">Own</option>
+                      <option value="Rent">Rent</option>
+                      <option value="Apartment">Apartment</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="monthlyIncome">Monthly Income <span class="urdu-label">ماہانہ آمدن</span></label>
+                    <input type="text" id="monthlyIncome" name="monthlyIncome" class="form-input" placeholder="e.g., 80,000 PKR">
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Preferences Section -->
+              <div class="form-section">
+                <h3 class="form-section-title">
+                  <span>Partner Preferences</span>
+                  <span class="urdu-label">پسندیدہ رشتے کی تفصیلات</span>
+                </h3>
+                
+                <div class="form-group">
+                  <label for="marriageTimeline">Marriage Timeline <span class="urdu-label">شادی کب تک چاہیے؟</span></label>
+                  <input type="text" id="marriageTimeline" name="marriageTimeline" class="form-input" placeholder="Within 6 months, 1 year, etc.">
+                </div>
+                
+                <div class="form-group">
+                  <label for="demand">Your Demands / Expectations <span class="urdu-label">آپ کی ڈیمانڈ</span></label>
+                  <textarea id="demand" name="demand" class="form-input" rows="3" placeholder="e.g., Religious, educated, family-oriented..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                  <label for="preferredCities">Preferred Cities <span class="urdu-label">پسندیدہ شہر</span></label>
+                  <input type="text" id="preferredCities" name="preferredCities" class="form-input" placeholder="Lahore, Islamabad, Karachi">
+                  <small class="field-note">Separate multiple cities with commas.</small>
+                </div>
+              </div>
+              
+              <!-- Error / Success Messages -->
+              <div id="form-message" class="form-message" style="display: none;"></div>
+              
+              <!-- Form Actions -->
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary">
+                  <span>Save & Continue</span>
+                  <span class="btn-urdu">محفوظ کریں</span>
+                </button>
+                <button type="button" id="skip-btn" class="btn btn-secondary">
+                  <span>Skip for Now</span>
+                  <span class="btn-urdu">بعد میں</span>
+                </button>
+              </div>
+              
+              <!-- Loading Indicator -->
+              <div id="form-loader" class="loader" style="display: none;">Saving profile...</div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div class="footer-brand">
+          <span class="footer-logo">Nikah Pakistan</span>
+          <span class="footer-tagline">نکاح پاکستان</span>
+        </div>
+        <div class="footer-links">
+          <a href="#">About</a>
+          <span class="separator">|</span>
+          <a href="#">Contact</a>
+          <span class="separator">|</span>
+          <a href="#">Privacy</a>
+        </div>
+        <div class="footer-copyright">
+          <p>© 2026 Nikah Pakistan. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Profile Page Logic -->
+  <script type="module">
+    /**
+     * PROFILE COMPLETION PAGE LOGIC
+     * - Loads existing user data from Firestore and prefills form.
+     * - Allows uploading profile picture to Firebase Storage.
+     * - Updates the user document in Firestore.
+     * - Redirects to browse.html on success.
+     */
+    
+    // Helper: Wait for Firebase services
+    const waitForFirebase = () => {
+      return new Promise((resolve, reject) => {
+        if (window.auth && window.db && window.storage) {
+          resolve({ auth: window.auth, db: window.db, storage: window.storage });
+          return;
+        }
+        const interval = setInterval(() => {
+          if (window.auth && window.db && window.storage) {
+            clearInterval(interval);
+            resolve({ auth: window.auth, db: window.db, storage: window.storage });
+          }
+        }, 100);
+        setTimeout(() => {
+          clearInterval(interval);
+          reject(new Error('Firebase not initialized.'));
+        }, 5000);
+      });
+    };
+    
+    // Import Firebase functions
+    import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+    
+    // DOM Elements
+    const form = document.getElementById('profile-form');
+    const skipBtn = document.getElementById('skip-btn');
+    const messageDiv = document.getElementById('form-message');
+    const loader = document.getElementById('form-loader');
+    const photoInput = document.getElementById('profile-photo');
+    const previewImg = document.getElementById('preview-img');
+    const photoPlaceholder = document.getElementById('photo-placeholder');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    
+    // Form fields
+    const fields = {
+      city: document.getElementById('city'),
+      height: document.getElementById('height'),
+      maritalStatus: document.getElementById('maritalStatus'),
+      contactNumber: document.getElementById('contactNumber'),
+      education: document.getElementById('education'),
+      profession: document.getElementById('profession'),
+      religiousEducation: document.getElementById('religiousEducation'),
+      motherTongue: document.getElementById('motherTongue'),
+      siblings: document.getElementById('siblings'),
+      houseStatus: document.getElementById('houseStatus'),
+      monthlyIncome: document.getElementById('monthlyIncome'),
+      marriageTimeline: document.getElementById('marriageTimeline'),
+      demand: document.getElementById('demand'),
+      preferredCities: document.getElementById('preferredCities')
+    };
+    
+    let currentUser = null;
+    let currentUserData = null;
+    let selectedFile = null;
+    
+    // Show message (error or success)
+    function showMessage(text, isError = true) {
+      messageDiv.textContent = text;
+      messageDiv.style.display = 'block';
+      messageDiv.className = 'form-message ' + (isError ? 'error' : 'success');
+      if (!isError) {
+        setTimeout(() => { messageDiv.style.display = 'none'; }, 5000);
+      }
+    }
+    
+    // Loading state
+    function setLoading(isLoading) {
+      submitBtn.disabled = isLoading;
+      skipBtn.disabled = isLoading;
+      loader.style.display = isLoading ? 'block' : 'none';
+    }
+    
+    // Prefill form with existing data
+    function prefillForm(data) {
+      if (!data) return;
+      for (const [key, element] of Object.entries(fields)) {
+        if (element && data[key] !== undefined) {
+          if (element.tagName === 'SELECT') {
+            element.value = data[key] || '';
+          } else {
+            element.value = data[key] || '';
+          }
+        }
+      }
+      // Handle photo preview if photoURL exists
+      if (data.photoURL) {
+        previewImg.src = data.photoURL;
+        previewImg.style.display = 'block';
+        photoPlaceholder.style.display = 'none';
+      }
+    }
+    
+    // Photo preview
+    photoInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        selectedFile = file;
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          previewImg.src = ev.target.result;
+          previewImg.style.display = 'block';
+          photoPlaceholder.style.display = 'none';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+    
+    // "Skip for Now" button
+    skipBtn.addEventListener('click', () => {
+      window.location.href = 'browse.html';
+    });
+    
+    // Form submission
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      if (!currentUser) {
+        showMessage('You must be logged in to update profile.');
+        return;
+      }
+      
+      setLoading(true);
+      showMessage('', false);
+      
+      try {
+        const { auth, db, storage } = await waitForFirebase();
+        const userDocRef = doc(db, "users", currentUser.uid);
+        
+        // Prepare update data
+        const updateData = {};
+        for (const [key, element] of Object.entries(fields)) {
+          if (element) {
+            let value = element.value;
+            if (element.type === 'number' && value !== '') {
+              value = parseInt(value, 10);
+            }
+            updateData[key] = value;
+          }
+        }
+        
+        // If a new photo is selected, upload it
+        if (selectedFile) {
+          const fileExt = selectedFile.name.split('.').pop();
+          const fileName = `${Date.now()}.${fileExt}`;
+          const storageRef = ref(storage, `profile_pictures/${currentUser.uid}/${fileName}`);
+          const uploadResult = await uploadBytes(storageRef, selectedFile);
+          const downloadURL = await getDownloadURL(uploadResult.ref);
+          updateData.photoURL = downloadURL;
+        }
+        
+        // Update Firestore document
+        await updateDoc(userDocRef, updateData);
+        
+        showMessage('Profile updated successfully! Redirecting...', false);
+        setTimeout(() => {
+          window.location.href = 'browse.html';
+        }, 1500);
+        
+      } catch (error) {
+        console.error('Profile update error:', error);
+        showMessage('Error: ' + error.message);
+      } finally {
+        setLoading(false);
+      }
+    });
+    
+    // Check auth state and load user data
+    (async () => {
+      try {
+        const { auth, db } = await waitForFirebase();
+        
+        onAuthStateChanged(auth, async (user) => {
+          if (!user) {
+            // Not logged in, redirect to login
+            window.location.href = 'login.html';
+            return;
+          }
+          currentUser = user;
+          
+          // Fetch user document from Firestore
+          const userDocRef = doc(db, "users", user.uid);
+          const docSnap = await getDoc(userDocRef);
+          if (docSnap.exists()) {
+            currentUserData = docSnap.data();
+            prefillForm(currentUserData);
+          } else {
+            console.warn('User document not found in Firestore.');
+          }
+        });
+      } catch (err) {
+        console.error('Auth initialization error:', err);
+        showMessage('Failed to load profile. Please refresh.');
+      }
+    })();
+  </script>
+</body>
+  </html>
