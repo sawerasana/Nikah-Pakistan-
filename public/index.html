@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  
+  <!-- SEO & Meta -->
+  <title>Nikah Pakistan | نکاح پاکستان</title>
+  <meta name="description" content="شادی کا بہترین ذریعہ - A trusted Islamic matrimonial platform for Pakistani families">
+  <meta name="theme-color" content="#0B3B2A">
+  
+  <!-- Favicon (Placeholder) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%230B3B2A'/%3E%3Ctext x='50' y='70' font-size='50' text-anchor='middle' fill='%23D4AF37' font-family='Arial'%3Eن%3C/text%3E%3C/svg%3E">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+  
+  <!-- Firebase SDK (Core + Auth) -->
+  <script type="module">
+    // Firebase configuration will be loaded from js/firebase-config.js
+    // This inline script ensures SDKs are available before main.js runs
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    import { getStorage } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+    
+    window.firebaseModules = { initializeApp, getAuth, getFirestore, getStorage };
+  </script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="site-header">
+      <div class="container header-inner">
+        <div class="logo-area">
+          <span class="logo-icon">🕌</span>
+          <h1 class="site-title">Nikah Pakistan</h1>
+          <span class="logo-urdu">نکاح پاکستان</span>
+        </div>
+        <!-- No navigation links on landing page to keep it clean -->
+      </div>
+    </header>
+
+    <!-- Main Hero Section -->
+    <main>
+      <section class="hero">
+        <div class="container hero-content">
+          <div class="hero-text">
+            <h2 class="hero-title-urdu">شادی کا بہترین ذریعہ</h2>
+            <p class="hero-subtitle">A trusted platform for finding your life partner</p>
+            <p class="hero-description">
+              رشتے آسمانوں پر بنتے ہیں، ہم صرف انہیں زمین پر ملانے کا باعزت ذریعہ فراہم کرتے ہیں۔
+              <br>
+              <span class="english-note">Honest profiles. Direct family communication. Complete privacy.</span>
+            </p>
+          </div>
+          
+          <!-- Call to Action Buttons -->
+          <div class="hero-actions">
+            <a href="pages/login.html" class="btn btn-primary btn-login">
+              <span>Login</span>
+              <span class="btn-urdu">لاگ ان</span>
+            </a>
+            <a href="pages/signup.html" class="btn btn-secondary btn-signup">
+              <span>Sign Up</span>
+              <span class="btn-urdu">اکاؤنٹ بنائیں</span>
+            </a>
+          </div>
+          
+          <!-- Trust Indicators -->
+          <div class="trust-badges">
+            <div class="badge">
+              <span class="badge-icon">🔒</span>
+              <span>100% Privacy</span>
+            </div>
+            <div class="badge">
+              <span class="badge-icon">👥</span>
+              <span>Family Approved</span>
+            </div>
+            <div class="badge">
+              <span class="badge-icon">📞</span>
+              <span>Direct Contact via Admin</span>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Brief How It Works -->
+      <section class="how-it-works">
+        <div class="container">
+          <h3 class="section-title">
+            <span>یہ کیسے کام کرتا ہے؟</span>
+            <span class="en-small">How it works</span>
+          </h3>
+          <div class="steps-grid">
+            <div class="step-card">
+              <div class="step-number">1</div>
+              <h4>مفت اکاؤنٹ بنائیں</h4>
+              <p>اپنی بنیادی معلومات کے ساتھ سائن اپ کریں</p>
+            </div>
+            <div class="step-card">
+              <div class="step-number">2</div>
+              <h4>رشتہ کارڈ بنائیں</h4>
+              <p>اپنا یا اپنے عزیز کا پروفائل مکمل کریں</p>
+            </div>
+            <div class="step-card">
+              <div class="step-number">3</div>
+              <h4>دلچسپی ظاہر کریں</h4>
+              <p>پسندیدہ رشتے پر کلک کریں، ہم رابطہ کروائیں گے</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div class="footer-brand">
+          <span class="footer-logo">Nikah Pakistan</span>
+          <span class="footer-tagline">نکاح پاکستان</span>
+        </div>
+        <div class="footer-links">
+          <a href="#">About</a>
+          <span class="separator">|</span>
+          <a href="#">Contact</a>
+          <span class="separator">|</span>
+          <a href="#">Privacy Policy</a>
+          <span class="separator">|</span>
+          <a href="#">Terms</a>
+        </div>
+        <div class="footer-copyright">
+          <p>© 2026 Nikah Pakistan. All rights reserved. <br class="mobile-break"> باذن اللہ تعالیٰ</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Main JavaScript (Routing/UI) -->
+  <script type="module" src="js/main.js"></script>
+  
+  <!-- Small inline script to handle auth state and redirect if already logged in (optional, will be expanded later) -->
+  <script type="module">
+    // This is just a placeholder; main.js will handle actual logic.
+    // We'll keep it minimal per request.
+    console.log('Nikah Pakistan - Landing page loaded.');
+  </script>
+</body>
+  </html>
