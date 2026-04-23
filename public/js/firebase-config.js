@@ -23,13 +23,13 @@ import { getStorage } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-
 // TODO: Replace these placeholder values with your actual Firebase project settings.
 // You can find these in your Firebase Console → Project Settings → General → Your apps → SDK setup and configuration.
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",                     // Replace with your actual API key
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com", // Replace with your authDomain
-  projectId: "YOUR_PROJECT_ID",               // Replace with your project ID
-  storageBucket: "YOUR_PROJECT_ID.appspot.com", // Replace with your storageBucket
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID", // Replace with your sender ID
-  appId: "YOUR_APP_ID",                       // Replace with your app ID
-  measurementId: "YOUR_MEASUREMENT_ID"        // Optional (for Analytics)
+  apiKey: "AIzaSyDJTssRQsNjhOCpjND8w1JJZsci2fMYRME",
+  authDomain: "nikah-pakistan-1de82.firebaseapp.com",
+  projectId: "nikah-pakistan-1de82",
+  storageBucket: "nikah-pakistan-1de82.firebasestorage.app",
+  messagingSenderId: "129256964058",
+  appId: "1:129256964058:web:90e8b939f95e1bffa6cae3",
+  measurementId: "G-NWWRKT8P8M"
 };
 
 // --- Initialize Firebase ---
