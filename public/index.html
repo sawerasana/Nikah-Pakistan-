@@ -4,26 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
   
-  <!-- SEO & Meta -->
   <title>Nikah Pakistan | نکاح پاکستان</title>
   <meta name="description" content="شادی کا بہترین ذریعہ - A trusted Islamic matrimonial platform for Pakistani families">
   <meta name="theme-color" content="#0B3B2A">
   
-  <!-- Favicon (Placeholder) -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%230B3B2A'/%3E%3Ctext x='50' y='70' font-size='50' text-anchor='middle' fill='%23D4AF37' font-family='Arial'%3Eن%3C/text%3E%3C/svg%3E">
   
   <!-- Stylesheet -->
   <link rel="stylesheet" href="css/style.css">
   
-  <!-- Firebase SDK (Core + Auth) -->
+  <!-- Universal Configuration (NEW) -->
+  <script src="js/universal.js"></script>
+  
+  <!-- Firebase SDK -->
   <script type="module">
-    // Firebase configuration will be loaded from js/firebase-config.js
-    // This inline script ensures SDKs are available before main.js runs
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
     import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
     import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
     import { getStorage } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
-    
     window.firebaseModules = { initializeApp, getAuth, getFirestore, getStorage };
   </script>
 </head>
