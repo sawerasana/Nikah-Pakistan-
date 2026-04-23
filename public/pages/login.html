@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | Nikah Pakistan</title>
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="../css/style.css">
+  
+  <!-- Firebase Configuration (must load before any auth logic) -->
+  <script type="module" src="../js/firebase-config.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header (consistent with landing page) -->
+    <header class="site-header">
+      <div class="container header-inner">
+        <div class="logo-area">
+          <span class="logo-icon">🕌</span>
+          <h1 class="site-title">Nikah Pakistan</h1>
+          <span class="logo-urdu">نکاح پاکستان</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+      <section class="auth-section">
+        <div class="container auth-container">
+          <div class="auth-card">
+            <h2 class="auth-title">
+              <span class="urdu-heading">لاگ ان</span>
+              <span class="en-subtitle">Login to your account</span>
+            </h2>
+            
+            <!-- Login Form -->
+            <form id="login-form" class="auth-form">
+              <!-- Email Field -->
+              <div class="form-group">
+                <label for="email" class="form-label">
+                  <span>Email</span>
+                  <span class="urdu-label">ای میل</span>
+                </label>
+                <input 
+                  type="email" 
+                  id="email" 
+                  name="email" 
+                  class="form-input" 
+                  placeholder="your@email.com" 
+                  dir="ltr"
+                  required
+                >
+              </div>
+              
+              <!-- Password Field -->
+              <div class="form-group">
+                <label for="password" class="form-label">
+                  <span>Password</span>
+                  <span class="urdu-label">پاس ورڈ</span>
+                </label>
+                <input 
+                  type="password" 
+                  id="password" 
+                  name="password" 
+                  class="form-input" 
+                  placeholder="••••••••" 
+                  dir="ltr"
+                  required
+                >
+              </div>
+              
+              <!-- Error Message Area -->
+              <div id="login-error" class="auth-error" style="display: none;"></div>
+              
+              <!-- Submit Button -->
+              <button type="submit" class="btn btn-primary btn-block">
+                <span>Login</span>
+                <span class="btn-urdu">لاگ ان</span>
+              </button>
+              
+              <!-- Loading Spinner (hidden by default) -->
+              <div id="login-loader" class="loader" style="display: none;">Loading...</div>
+            </form>
+            
+            <!-- Sign Up Link -->
+            <div class="auth-footer">
+              <p>
+                <span>Don't have an account?</span>
+                <span class="urdu-text">اکاؤنٹ نہیں ہے؟</span>
+                <a href="signup.html" class="auth-link">Sign Up</a>
+              </p>
+            </div>
+            
+            <!-- Back to Home -->
+            <div class="auth-back">
+              <a href="../index.html" class="back-link">← Back to Home</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div class="footer-brand">
+          <span class="footer-logo">Nikah Pakistan</span>
+          <span class="footer-tagline">نکاح پاکستان</span>
+        </div>
+        <div class="footer-links">
+          <a href="#">About</a>
+          <span class="separator">|</span>
+          <a href="#">Contact</a>
+          <span class="separator">|</span>
+          <a href="#">Privacy</a>
+        </div>
+        <div class="footer-copyright">
+          <p>© 2026 Nikah Pakistan. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Login Logic Script -->
+  <script type="module">
+    /**
+     * LOGIN PAGE LOGIC
+     * This script uses Firebase Auth initialized in firebase-config.js
+     * It will work once you have replaced the placeholder API keys.
+     */
+    
+    // Wait for Firebase services to be available (exposed on window)
+    const checkFirebase = () => {
+      return new Promise((resolve, reject) => {
+        if (window.auth) {
+          resolve(window.auth);
+        } else {
+          // Wait a bit for the config script to load
+          const interval = setInterval(() => {
+            if (window.auth) {
+              clearInterval(interval);
+              resolve(window.auth);
+            }
+          }, 100);
+          // Timeout after 5 seconds
+          setTimeout(() => {
+            clearInterval(interval);
+            reject(new Error('Firebase Auth not initialized. Check firebase-config.js.'));
+          }, 5000);
+        }
+      });
+    };
+    
+    // Import Firebase Auth functions (needed for signInWithEmailAndPassword)
+    import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    
+    // DOM Elements
+    const loginForm = document.getElementById('login-form');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const errorDiv = document.getElementById('login-error');
+    const loader = document.getElementById('login-loader');
+    const submitBtn = loginForm.querySelector('button[type="submit"]');
+    
+    // Handle form submission
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      // Clear previous error
+      errorDiv.style.display = 'none';
+      errorDiv.textContent = '';
+      
+      // Get values
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+      
+      if (!email || !password) {
+        showError('Please enter both email and password.');
+        return;
+      }
+      
+      // Show loading state
+      setLoading(true);
+      
+      try {
+        // Wait for auth to be ready
+        const auth = await checkFirebase();
+        
+        // Attempt sign in
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        
+        // Success - redirect to browse page (or profile page)
+        console.log('Login successful:', userCredential.user.uid);
+        window.location.href = 'browse.html'; // We'll create this later
+        
+      } catch (error) {
+        console.error('Login error:', error);
+        
+        // Handle specific Firebase auth errors with user-friendly messages
+        let errorMessage = 'Login failed. Please try again.';
+        switch (error.code) {
+          case 'auth/invalid-email':
+            errorMessage = 'Invalid email address format.';
+            break;
+          case 'auth/user-disabled':
+            errorMessage = 'This account has been disabled.';
+            break;
+          case 'auth/user-not-found':
+            errorMessage = 'No account found with this email.';
+            break;
+          case 'auth/wrong-password':
+            errorMessage = 'Incorrect password. Please try again.';
+            break;
+          case 'auth/too-many-requests':
+            errorMessage = 'Too many failed attempts. Please try again later.';
+            break;
+          default:
+            errorMessage = error.message;
+        }
+        showError(errorMessage);
+      } finally {
+        setLoading(false);
+      }
+    });
+    
+    function showError(message) {
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+    }
+    
+    function setLoading(isLoading) {
+      if (isLoading) {
+        submitBtn.disabled = true;
+        loader.style.display = 'block';
+      } else {
+        submitBtn.disabled = false;
+        loader.style.display = 'none';
+      }
+    }
+    
+    // Optional: If user is already logged in, redirect to browse
+    (async () => {
+      try {
+        const auth = await checkFirebase();
+        // Use onAuthStateChanged to check current user
+        import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js").then(({ onAuthStateChanged }) => {
+          onAuthStateChanged(auth, (user) => {
+            if (user) {
+              // Already signed in, redirect to browse
+              window.location.href = 'browse.html';
+            }
+          });
+        });
+      } catch (err) {
+        // Firebase not configured yet; ignore.
+        console.warn('Auth check skipped:', err.message);
+      }
+    })();
+  </script>
+</body>
+</html>
