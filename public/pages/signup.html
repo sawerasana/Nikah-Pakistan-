@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ur" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up | Nikah Pakistan</title>
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="../css/style.css">
+  
+  <!-- Firebase Configuration -->
+  <script type="module" src="../js/firebase-config.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header class="site-header">
+      <div class="container header-inner">
+        <div class="logo-area">
+          <span class="logo-icon">🕌</span>
+          <h1 class="site-title">Nikah Pakistan</h1>
+          <span class="logo-urdu">نکاح پاکستان</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+      <section class="auth-section">
+        <div class="container auth-container">
+          <div class="auth-card">
+            <h2 class="auth-title">
+              <span class="urdu-heading">اکاؤنٹ بنائیں</span>
+              <span class="en-subtitle">Create your account</span>
+            </h2>
+            
+            <!-- Sign Up Form -->
+            <form id="signup-form" class="auth-form">
+              <!-- Full Name -->
+              <div class="form-group">
+                <label for="fullName" class="form-label">
+                  <span>Full Name</span>
+                  <span class="urdu-label">پورا نام</span>
+                </label>
+                <input 
+                  type="text" 
+                  id="fullName" 
+                  name="fullName" 
+                  class="form-input" 
+                  placeholder="Muhammad Ali" 
+                  required
+                >
+              </div>
+              
+              <!-- Email -->
+              <div class="form-group">
+                <label for="email" class="form-label">
+                  <span>Email</span>
+                  <span class="urdu-label">ای میل</span>
+                </label>
+                <input 
+                  type="email" 
+                  id="email" 
+                  name="email" 
+                  class="form-input" 
+                  placeholder="your@email.com" 
+                  dir="ltr"
+                  required
+                >
+              </div>
+              
+              <!-- Password -->
+              <div class="form-group">
+                <label for="password" class="form-label">
+                  <span>Password</span>
+                  <span class="urdu-label">پاس ورڈ</span>
+                </label>
+                <input 
+                  type="password" 
+                  id="password" 
+                  name="password" 
+                  class="form-input" 
+                  placeholder="••••••••" 
+                  dir="ltr"
+                  required
+                >
+              </div>
+              
+              <!-- Confirm Password -->
+              <div class="form-group">
+                <label for="confirmPassword" class="form-label">
+                  <span>Confirm Password</span>
+                  <span class="urdu-label">پاس ورڈ دوبارہ لکھیں</span>
+                </label>
+                <input 
+                  type="password" 
+                  id="confirmPassword" 
+                  name="confirmPassword" 
+                  class="form-input" 
+                  placeholder="••••••••" 
+                  dir="ltr"
+                  required
+                >
+              </div>
+              
+              <!-- Gender Dropdown -->
+              <div class="form-group">
+                <label for="gender" class="form-label">
+                  <span>Gender</span>
+                  <span class="urdu-label">جنس</span>
+                </label>
+                <select id="gender" name="gender" class="form-input" required>
+                  <option value="" disabled selected>-- Select --</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+              </div>
+              
+              <!-- Age -->
+              <div class="form-group">
+                <label for="age" class="form-label">
+                  <span>Age</span>
+                  <span class="urdu-label">عمر</span>
+                </label>
+                <input 
+                  type="number" 
+                  id="age" 
+                  name="age" 
+                  class="form-input" 
+                  min="18" 
+                  max="100" 
+                  placeholder="25" 
+                  required
+                >
+              </div>
+              
+              <!-- Error Message Area -->
+              <div id="signup-error" class="auth-error" style="display: none;"></div>
+              
+              <!-- Submit Button -->
+              <button type="submit" class="btn btn-primary btn-block">
+                <span>Sign Up</span>
+                <span class="btn-urdu">اکاؤنٹ بنائیں</span>
+              </button>
+              
+              <!-- Loading Indicator -->
+              <div id="signup-loader" class="loader" style="display: none;">Creating account...</div>
+            </form>
+            
+            <!-- Login Link -->
+            <div class="auth-footer">
+              <p>
+                <span>Already have an account?</span>
+                <span class="urdu-text">پہلے سے اکاؤنٹ ہے؟</span>
+                <a href="login.html" class="auth-link">Login</a>
+              </p>
+            </div>
+            
+            <!-- Back to Home -->
+            <div class="auth-back">
+              <a href="../index.html" class="back-link">← Back to Home</a>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div class="footer-brand">
+          <span class="footer-logo">Nikah Pakistan</span>
+          <span class="footer-tagline">نکاح پاکستان</span>
+        </div>
+        <div class="footer-links">
+          <a href="#">About</a>
+          <span class="separator">|</span>
+          <a href="#">Contact</a>
+          <span class="separator">|</span>
+          <a href="#">Privacy</a>
+        </div>
+        <div class="footer-copyright">
+          <p>© 2026 Nikah Pakistan. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Sign Up Logic -->
+  <script type="module">
+    /**
+     * SIGNUP PAGE LOGIC
+     * 1. Creates user with email/password (Firebase Auth)
+     * 2. Stores additional profile data in Firestore (users collection)
+     * 3. Redirects to profile completion page
+     */
+    
+    // Helper: Wait for Firebase to be ready
+    const waitForFirebase = () => {
+      return new Promise((resolve, reject) => {
+        if (window.auth && window.db) {
+          resolve({ auth: window.auth, db: window.db });
+          return;
+        }
+        const interval = setInterval(() => {
+          if (window.auth && window.db) {
+            clearInterval(interval);
+            resolve({ auth: window.auth, db: window.db });
+          }
+        }, 100);
+        setTimeout(() => {
+          clearInterval(interval);
+          reject(new Error('Firebase not initialized. Check firebase-config.js.'));
+        }, 5000);
+      });
+    };
+    
+    // Import Firebase functions
+    import { createUserWithEmailAndPassword, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { doc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    
+    // DOM Elements
+    const form = document.getElementById('signup-form');
+    const fullNameInput = document.getElementById('fullName');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const confirmInput = document.getElementById('confirmPassword');
+    const genderSelect = document.getElementById('gender');
+    const ageInput = document.getElementById('age');
+    const errorDiv = document.getElementById('signup-error');
+    const loader = document.getElementById('signup-loader');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    
+    // Show error helper
+    function showError(message) {
+      errorDiv.textContent = message;
+      errorDiv.style.display = 'block';
+    }
+    
+    // Loading state helper
+    function setLoading(isLoading) {
+      submitBtn.disabled = isLoading;
+      loader.style.display = isLoading ? 'block' : 'none';
+    }
+    
+    // Generate a unique card ID for the user
+    function generateCardId() {
+      const prefix = 'NKH-';
+      const randomPart = Math.random().toString(36).substring(2, 8).toUpperCase();
+      return prefix + randomPart;
+    }
+    
+    // Form submission handler
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorDiv.style.display = 'none';
+      
+      // Get values
+      const fullName = fullNameInput.value.trim();
+      const email = emailInput.value.trim();
+      const password = passwordInput.value;
+      const confirmPassword = confirmInput.value;
+      const gender = genderSelect.value;
+      const age = parseInt(ageInput.value, 10);
+      
+      // Basic validations
+      if (!fullName || !email || !password || !confirmPassword || !gender || !age) {
+        showError('Please fill in all fields.');
+        return;
+      }
+      
+      if (password.length < 6) {
+        showError('Password must be at least 6 characters long.');
+        return;
+      }
+      
+      if (password !== confirmPassword) {
+        showError('Passwords do not match.');
+        return;
+      }
+      
+      if (age < 18) {
+        showError('You must be at least 18 years old to register.');
+        return;
+      }
+      
+      setLoading(true);
+      
+      try {
+        const { auth, db } = await waitForFirebase();
+        
+        // 1. Create user in Firebase Auth
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        
+        // 2. Update display name in Auth profile
+        await updateProfile(user, { displayName: fullName });
+        
+        // 3. Prepare user data for Firestore
+        const cardId = generateCardId();
+        const userData = {
+          uid: user.uid,
+          name: fullName,
+          email: email,
+          gender: gender,
+          age: age,
+          cardId: cardId,
+          isActive: true,           // Profile visible to others
+          createdAt: serverTimestamp(),
+          // Fields that will be completed later
+          city: '',
+          education: '',
+          profession: '',
+          maritalStatus: '',
+          height: '',
+          religiousEducation: '',
+          motherTongue: '',
+          siblings: 0,
+          houseStatus: '',
+          monthlyIncome: '',
+          marriageTimeline: '',
+          demand: '',
+          preferredCities: '',
+          contactNumber: '',
+          photoURL: ''
+        };
+        
+        // 4. Save to Firestore (users collection)
+        await setDoc(doc(db, "users", user.uid), userData);
+        
+        console.log('User registered and Firestore document created:', user.uid);
+        
+        // 5. Redirect to profile completion page (we'll create it later)
+        // For now, redirect to browse or a placeholder page
+        window.location.href = 'profile.html';  // We'll create this next
+        
+      } catch (error) {
+        console.error('Signup error:', error);
+        
+        // Handle specific Firebase errors
+        let errorMessage = 'Registration failed. Please try again.';
+        switch (error.code) {
+          case 'auth/email-already-in-use':
+            errorMessage = 'This email is already registered. Please login instead.';
+            break;
+          case 'auth/invalid-email':
+            errorMessage = 'Please enter a valid email address.';
+            break;
+          case 'auth/weak-password':
+            errorMessage = 'Password is too weak. Please use at least 6 characters.';
+            break;
+          case 'auth/network-request-failed':
+            errorMessage = 'Network error. Please check your internet connection.';
+            break;
+          default:
+            errorMessage = error.message;
+        }
+        showError(errorMessage);
+      } finally {
+        setLoading(false);
+      }
+    });
+  </script>
+</body>
+          </html>
